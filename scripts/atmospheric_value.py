@@ -38,12 +38,12 @@ def get_decision_image(img):
     
     return res
 
-def get_atmospheric_value(img):
+def get_atmospheric_value(img, threshold):
     dark_channel = get_dark_channel(img)
     decision_image = get_decision_image(img)
     dark_channel = dark_channel.flatten()
     decision_image = decision_image.flatten()
-    threshold=6
+
     # get the top 0.1%
     num_pixels = img.shape[0] * img.shape[1]
     sorted_indices = np.argsort(dark_channel)
@@ -60,7 +60,7 @@ def main():
     args = parse_args()
     img = cv2.imread(args.input_path)
 
-    A = get_atmospheric_value(img)
+    A = get_atmospheric_value(img, 6)
     print(A)
     
     # plt.imshow(img)
