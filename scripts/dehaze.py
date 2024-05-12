@@ -24,7 +24,7 @@ def main():
     args = parse_args()
     img = cv2.imread(args.input_path)
 
-    A = get_atmospheric_value(img, 6)
+    A = get_atmospheric_value(img, 2)
 
     luminance = get_luminance(img)
     rough_transmission = MSRCR(luminance, (0.1, 0.1, 0.8), (1.5, 40, 150))

@@ -53,7 +53,13 @@ def get_atmospheric_value(img, threshold):
 
     # only use pixels whose f(x) > threshold
     filtered = candidates[candidates_value > threshold]
+
+    # method 2, filter then sample
+    # mask = decision_image > threshold
+    # candidates = dark_channel[mask]
+    # winners = np.sort(candidates)[(999 * len(candidates) // 1000):]
     
+    # return np.mean(winners)
     return np.mean(filtered)
 
 def main():
