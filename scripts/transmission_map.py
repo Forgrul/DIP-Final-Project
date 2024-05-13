@@ -36,7 +36,7 @@ def MSRCR(img, w, sigmas):
     Lmsr = MSR(img, w, sigmas)
 
     # CR
-    filter_size = 50 # not sure how to set this
+    filter_size = 15 # not sure how to set this
     h, w = img.shape
     M = h * w
     extended = np.pad(img, ((filter_size//2, filter_size//2), (filter_size//2, filter_size//2)), 'reflect')
@@ -45,15 +45,24 @@ def MSRCR(img, w, sigmas):
         for j in range(w):
             window = extended[i:i+filter_size, j:j+filter_size]
             _sum = np.sum(window)
-            C = np.log(img[i][j] / (1 / M * _sum) + 1) # filter_size=15, C ~= 6 / filter_size=50, C ~= 4.36
+            C = np.log((img[i][j] + 1) / (1 / M * _sum + 1)) # filter_size=15, C ~= 6 / filter_size=50, C ~= 4.36
             Lmsrcr[i][j] = C * Lmsr[i][j]
 
     delta = 128
     kappa = 128
     Lmsrcr = delta * Lmsrcr + kappa
+    # Lmsrcr = np.abs(Lmsrcr)
 
-    # return cv2.normalize(Lmsrcr, None, 0, 1, cv2.NORM_MINMAX)
-    return np.abs(Lmsrcr)
+    # sort_L = np.sort(Lmsrcr, None)
+    # N = Lmsrcr.size
+    # Vmin = sort_L[int(N * 0.01)]
+    # Vmax = sort_L[int(N * 0.99) - 1]
+    # Lmsrcr[Lmsrcr < Vmin] = Vmin
+    # Lmsrcr[Lmsrcr > Vmax] = Vmax
+
+    # return cv2.normalize(Lmsrcr, None, 0, 255, cv2.NORM_MINMAX)
+    # return np.abs(Lmsrcr)
+    return Lmsrcr
 
 def max_filter(img, size):
     extended = np.pad(img, ((size//2, size//2), (size//2, size//2)), 'reflect')
@@ -84,7 +93,13 @@ def optimize_transmission(img, rough_transmission):
     # T = max_filter(T, 15)
     # T = blur_filter(T, 20)
 
-    # return T
+    # sort_T = np.sort(T, None)
+    # N = T.size
+    # Vmin = sort_T[int(N * 0.001)]
+    # Vmax = sort_T[int(N * 0.999) - 1]
+    # T[T < Vmin] = Vmin
+    # T[T > Vmax] = Vmax
+
     return cv2.normalize(T, None, 0, 1, cv2.NORM_MINMAX)
 
 def main():

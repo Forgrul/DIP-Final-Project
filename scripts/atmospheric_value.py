@@ -21,11 +21,13 @@ def get_dark_channel(img):
             subarray = extended[i:i+filter_size, j:j+filter_size]
             res[i][j] = np.min(subarray)
 
+    # plt.imshow(res, cmap='grey')
+    # plt.show()
     return res
 
 def get_decision_image(img):
     h, w, _ = img.shape
-    res = np.zeros((h, w), dtype=float)
+    res = np.zeros((h, w), dtype='double')
 
     for i in range(h):
         for j in range(w):
@@ -36,6 +38,9 @@ def get_decision_image(img):
             # val = (b**2 + g**2 + r**2 - (b + g + r)**2 / 3) ** 0.5
             res[i][j] = ((b**2 + g**2 + r**2) - (b + g + r)**2 / 3) ** 0.5
     
+    res = cv2.normalize(res, None, 0, 255, cv2.NORM_MINMAX)
+    # plt.imshow(res, cmap='grey')
+    # plt.show()
     return res
 
 def get_atmospheric_value(img, threshold):
@@ -45,22 +50,22 @@ def get_atmospheric_value(img, threshold):
     decision_image = decision_image.flatten()
 
     # get the top 0.1%
-    num_pixels = img.shape[0] * img.shape[1]
-    sorted_indices = np.argsort(dark_channel)
-    candidates_indices = sorted_indices[(999 * num_pixels // 1000):]
-    candidates = dark_channel[candidates_indices]
-    candidates_value = decision_image[candidates_indices]
+    # num_pixels = img.shape[0] * img.shape[1]
+    # sorted_indices = np.argsort(dark_channel)
+    # candidates_indices = sorted_indices[(999 * num_pixels // 1000):]
+    # candidates = dark_channel[candidates_indices]
+    # candidates_value = decision_image[candidates_indices]
 
     # only use pixels whose f(x) > threshold
-    filtered = candidates[candidates_value > threshold]
+    # filtered = candidates[candidates_value > threshold]
 
     # method 2, filter then sample
-    # mask = decision_image > threshold
-    # candidates = dark_channel[mask]
-    # winners = np.sort(candidates)[(999 * len(candidates) // 1000):]
+    mask = decision_image > threshold
+    candidates = dark_channel[mask]
+    winners = np.sort(candidates)[(999 * len(candidates) // 1000):]
     
-    # return np.mean(winners)
-    return np.mean(filtered)
+    return np.mean(winners)
+    # return np.mean(filtered)
 
 def main():
     args = parse_args()
