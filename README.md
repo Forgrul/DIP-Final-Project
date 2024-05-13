@@ -1,5 +1,7 @@
 # Digital Image Processing Group 5 Final Project: Image dehazing
 
+## Usage
+python scripts/dehaze.py -i [input_path] -o [output_path] -t [atmospheric_value's threshold]
 
 ## Transmission map
 在optimize_transmission中加了maxfilter和blurfilter之後結果很爛 \
