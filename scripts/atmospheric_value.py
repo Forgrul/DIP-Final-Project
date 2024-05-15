@@ -38,7 +38,7 @@ def get_decision_image(img):
             # val = (b**2 + g**2 + r**2 - (b + g + r)**2 / 3) ** 0.5
             res[i][j] = ((b**2 + g**2 + r**2) - (b + g + r)**2 / 3) ** 0.5
     
-    res = cv2.normalize(res, None, 0, 255, cv2.NORM_MINMAX)
+    # res = cv2.normalize(res, None, 0, 255, cv2.NORM_MINMAX)
     # plt.imshow(res, cmap='grey')
     # plt.show()
     return res

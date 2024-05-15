@@ -31,21 +31,18 @@ def dehaze(img, t, A):
     b = (b - A) / t + A
     b[b < 0] = 0
     b[b > 255] = 255
-    # print(np.min(b), np.max(b))
     b = simplest_color_balance(b)
     b = b.astype('uint8')
 
     g = (g - A) / t + A
     g[g < 0] = 0
     g[g > 255] = 255
-    # print(np.min(g), np.max(g))
     g = simplest_color_balance(g)
     g = g.astype('uint8')
 
     r = (r - A) / t + A
     r[r < 0] = 0
     r[r > 255] = 255
-    # print(np.min(r), np.max(r))
     r = simplest_color_balance(r)
     r = r.astype('uint8')
 
@@ -56,6 +53,7 @@ def main():
     img = cv2.imread(args.input_path)
 
     A = get_atmospheric_value(img, threshold=int(args.threshold))
+    print("Atmospheric value A =", A)
 
     luminance = get_luminance(img)
     rough_transmission = MSRCR(luminance, (0.1, 0.1, 0.8), (1.5, 40, 150))
@@ -63,7 +61,8 @@ def main():
 
     res = dehaze(img, optimized_transmission, A)
     
-    # plt.imshow(optimized_transmission, cmap='grey')
+    # show = cv2.cvtColor(res, cv2.COLOR_BGR2RGB)
+    # plt.imshow(show)
     # plt.show()
     cv2.imwrite(args.output_path, res)
 

@@ -17,11 +17,11 @@ def get_luminance(img):
 def MSR(img, w, sigmas):
     k = len(w)
     res = np.zeros_like(img, dtype='double')
-    logI = np.log(img.astype('double') + 1)
+    logI = np.log(img.astype('double') + 1.0)
 
     for i in range(k):
         g = cv2.GaussianBlur(img, (0,0), sigmas[i])
-        logG = np.log(g.astype('double') + 1)
+        logG = np.log(g.astype('double') + 1.0)
         res += (w[i] * (logI - logG))
 
     # res = cv2.normalize(res, None, 0, 255, cv2.NORM_MINMAX)
@@ -29,6 +29,7 @@ def MSR(img, w, sigmas):
     # print(np.min(res), np.max(res))
     # abs res: 0 ~ 1.67
     # res: -1.67~0.53
+    # return np.abs(res)
     return res
 
 def MSRCR(img, w, sigmas):
@@ -45,23 +46,17 @@ def MSRCR(img, w, sigmas):
         for j in range(w):
             window = extended[i:i+filter_size, j:j+filter_size]
             _sum = np.sum(window)
-            C = np.log((img[i][j] + 1) / (1 / M * _sum + 1)) # filter_size=15, C ~= 6 / filter_size=50, C ~= 4.36
+            C = np.log((img[i][j] + 1.0) / (1 / M * (_sum + 1.0))) # filter_size=15, C ~= 6 / filter_size=50, C ~= 4.36
             Lmsrcr[i][j] = C * Lmsr[i][j]
+            # print(C)
+            # if i == 425 and j == 236 or i == 180 and j == 114:
+            #     print(i, j)
+            #     print(C, Lmsr[i][j])
 
-    delta = 128
-    kappa = 128
-    Lmsrcr = delta * Lmsrcr + kappa
-    # Lmsrcr = np.abs(Lmsrcr)
+    # delta = 128
+    # kappa = 128
+    # Lmsrcr = delta * Lmsrcr + kappa
 
-    # sort_L = np.sort(Lmsrcr, None)
-    # N = Lmsrcr.size
-    # Vmin = sort_L[int(N * 0.01)]
-    # Vmax = sort_L[int(N * 0.99) - 1]
-    # Lmsrcr[Lmsrcr < Vmin] = Vmin
-    # Lmsrcr[Lmsrcr > Vmax] = Vmax
-
-    # return cv2.normalize(Lmsrcr, None, 0, 255, cv2.NORM_MINMAX)
-    # return np.abs(Lmsrcr)
     return Lmsrcr
 
 def max_filter(img, size):
@@ -90,17 +85,12 @@ def optimize_transmission(img, rough_transmission):
     miu = 5
     T = miu * rough_transmission
     T = T - img
-    # T = max_filter(T, 15)
-    # T = blur_filter(T, 20)
 
-    # sort_T = np.sort(T, None)
-    # N = T.size
-    # Vmin = sort_T[int(N * 0.001)]
-    # Vmax = sort_T[int(N * 0.999) - 1]
-    # T[T < Vmin] = Vmin
-    # T[T > Vmax] = Vmax
+    T = max_filter(T, 15)
+    T = blur_filter(T, 20)
 
-    return cv2.normalize(T, None, 0, 1, cv2.NORM_MINMAX)
+    T = cv2.normalize(T, None, 0, 1, cv2.NORM_MINMAX)
+    return T
 
 def main():
     args = parse_args()
