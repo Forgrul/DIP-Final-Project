@@ -34,9 +34,13 @@ def dehaze(luminance, t, A):
 
 def adjust_color(img):
     b, g, r = cv2.split(img)
+    
     b = b.astype('double')
     g = g.astype('double')
     r = r.astype('double')
+    # b = cv2.normalize(b, None, 0, 255, cv2.NORM_MINMAX)
+    # g = cv2.normalize(g, None, 0, 255, cv2.NORM_MINMAX)
+    # r = cv2.normalize(r, None, 0, 255, cv2.NORM_MINMAX)
     b = simplest_color_balance(b)
     g = simplest_color_balance(g)
     r = simplest_color_balance(r)

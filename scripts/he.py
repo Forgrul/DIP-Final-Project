@@ -10,12 +10,12 @@ def hisEqulColor(img):
     return img
 
 
-fname='./sample/architecture1-Hekm.png'
+fname='./test.png'
 img=cv2.imread(fname)
 
 # cv2.imshow('img', img)
 img2=hisEqulColor(img)
-cv2.imwrite("res.png", img2)
+cv2.imwrite("he_static3.png", img2)
 # plt.imshow(img2)
 # plt.show()
 # a = input()
